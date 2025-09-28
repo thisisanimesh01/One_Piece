@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>One Piece Face Matcher</title>
+</head>
+<body>
+  <h1>One Piece character</h1>
+  <video id="video" width="320" height="240" autoplay></video>
+  <button onclick="scan()">Scan Face</button>
+  <h2 id="result">Result: —</h2>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const result = document.getElementById('result');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; });
+
+    async function scan() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+      let dataURL = canvas.toDataURL('image/jpeg');
+
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataURL })
+      });
+      const json = await res.json();
+      result.innerText = "Result: " + json.character;
+    }
+  </script>
+</body>
+</html>

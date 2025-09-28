@@ -1,0 +1,7 @@
+torch
+torchvision
+pillow
+tqdm
+flask
+flask-cors
+facenet-pytorch
